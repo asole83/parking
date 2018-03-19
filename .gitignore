@@ -1,6 +1,3 @@
-/.metadata/
-Servers/
-RemoteSystemsTempFiles/
-RESTfullApp/target/
-RESTfullApp/.classpath
-RESTfullApp/.project
+/target/
+/.classpath
+/.project
