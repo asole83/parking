@@ -4,3 +4,9 @@ build.gradle
 gradlew.bat
 gradlew
 manifest.yml
+/.metadata/
+/bin/
+RemoteSystemsTempFiles/
+.classpath
+.project
+.settings/
