@@ -1,3 +1,6 @@
-/target/
-/.classpath
-/.project
+target/
+gradle/
+build.gradle
+gradlew.bat
+gradlew
+manifest.yml
