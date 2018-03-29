@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hello;
+package com.touk.parking;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GreetingControllerTests {
+public class ParkingControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,6 +45,14 @@ public class GreetingControllerTests {
 
     @Test
     public void paramGreetingShouldReturnTailoredMessage() throws Exception {
+
+        this.mockMvc.perform(get("/greeting").param("name", "Spring Community"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("Hello, Spring Community!"));
+    }
+    
+    @Test
+    public void param() throws Exception {
 
         this.mockMvc.perform(get("/greeting").param("name", "Spring Community"))
                 .andDo(print()).andExpect(status().isOk())

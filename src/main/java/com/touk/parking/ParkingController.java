@@ -8,10 +8,10 @@ import com.touk.parking.model.*;
 @RestController
 public class ParkingController {
 
-    private static final String template = "Hello 22, %s!";
+    private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping("/0.1/greeting")
+    @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
         return new Greeting(counter.incrementAndGet(),
                             String.format(template, name));
