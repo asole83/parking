@@ -17,9 +17,12 @@ public class ParkingController {
                             String.format(template, name));
     }
 	
-	@RequestMapping("/0.1/greeting2")
-    public Driver greeting2(@RequestParam(value="name", defaultValue="World") String name) {
-        Driver d1=new Driver(true,1);
-		return d1;
+	@RequestMapping("/0.1/startParkingMeter")
+    public Greeting startParkingMeter(@RequestParam(value="carID") int carID, 
+    		@RequestParam(value="parkingMeterID") int parkingMeterID) {
+        
+        
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, carID));
     }
 }

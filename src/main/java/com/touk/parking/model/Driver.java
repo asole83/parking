@@ -4,10 +4,20 @@ public class Driver {
 
     private int driverID;
     private boolean isVIP;
+    private String name;
 
-    public Driver(boolean isVIP, int driverID) {
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Driver(int driverID, String name, boolean isVIP) {
 		this.isVIP = isVIP;
 		this.driverID = driverID;
+		this.name =name;
 	}
 
 	public int getDriverID() {

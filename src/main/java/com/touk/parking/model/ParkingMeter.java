@@ -2,17 +2,17 @@ package com.touk.parking.model;
 
 public class ParkingMeter {
 
-    private int driverID;
+    private int parkingID;
     private int parkingMeterID;
-	public ParkingMeter(int driverID, int parkingMeterID) {
-		this.driverID = driverID;
+	public ParkingMeter(int parkingID, int parkingMeterID) {
+		this.parkingID = parkingID;
 		this.parkingMeterID = parkingMeterID;
 	}
-	public int getDriverID() {
-		return driverID;
+	public int getParkingID() {
+		return parkingID;
 	}
-	public void setDriverID(int driverID) {
-		this.driverID = driverID;
+	public void setParkingID(int parkingID) {
+		this.parkingID = parkingID;
 	}
 	public int getParkingMeterID() {
 		return parkingMeterID;
@@ -22,7 +22,7 @@ public class ParkingMeter {
 	}
 	@Override
 	public String toString() {
-		return "ParkingMeter [driverID=" + driverID + ", parkingMeterID=" + parkingMeterID + "]";
+		return "ParkingMeter [parkingID=" + parkingID + ", parkingMeterID=" + parkingMeterID + "]";
 	}
 	@Override
 	public int hashCode() {
