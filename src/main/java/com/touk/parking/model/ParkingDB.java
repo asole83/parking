@@ -89,8 +89,8 @@ public class ParkingDB {
 	    
 	    //Parkings and parking meters
 	    stmt.executeUpdate("insert into parking values ("+rb.getString("parking1ID")+",'"+rb.getString("parking1Name")+"')");
-	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeterID1")+","+rb.getString("parking1ID")+")");
-	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeterID2")+","+rb.getString("parking1ID")+")");
+	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeter1ID")+","+rb.getString("parking1ID")+")");
+	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeter2ID")+","+rb.getString("parking1ID")+")");
 
 	    //Currency
 	    stmt.executeUpdate("insert into currency values ("+rb.getString("currency1ID")+",'"+rb.getString("currency1Name")+"',"+rb.getString("currency1InitialPrice")+")");
