@@ -77,10 +77,26 @@ public class ParkingDB {
 	  try {
 		Statement stmt = conn.createStatement();
 		final ResourceBundle rb = ResourceBundle.getBundle("TestValues");
-
-		System.out.println(rb.getString("hola"));
 		
+		//Drivers and cars
 	    stmt.executeUpdate("insert into driver values ("+rb.getString("driver1ID")+",'"+rb.getString("driver1Name")+"','"+rb.getString("driver1IsVIP")+"')");
+	    stmt.executeUpdate("insert into car values ("+rb.getString("car1ID")+","+rb.getString("driver1ID")+",'"+rb.getString("car1PlateNumber")+"')");
+	    stmt.executeUpdate("insert into car values ("+rb.getString("car2ID")+","+rb.getString("driver1ID")+",'"+rb.getString("car2PlateNumber")+"')");
+	    
+	    stmt.executeUpdate("insert into driver values ("+rb.getString("driver2ID")+",'"+rb.getString("driver2Name")+"','"+rb.getString("driver2IsVIP")+"')");
+	    stmt.executeUpdate("insert into car values ("+rb.getString("car3ID")+","+rb.getString("driver2ID")+",'"+rb.getString("car3PlateNumber")+"')");
+	    stmt.executeUpdate("insert into car values ("+rb.getString("car4ID")+","+rb.getString("driver2ID")+",'"+rb.getString("car4PlateNumber")+"')");
+	    
+	    //Parkings and parking meters
+	    stmt.executeUpdate("insert into parking values ("+rb.getString("parking1ID")+",'"+rb.getString("parking1Name")+"')");
+	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeterID1")+","+rb.getString("parking1ID")+")");
+	    stmt.executeUpdate("insert into parkingmeter values ("+rb.getString("parkingMeterID2")+","+rb.getString("parking1ID")+")");
+
+	    //Currency
+	    stmt.executeUpdate("insert into currency values ("+rb.getString("currency1ID")+",'"+rb.getString("currency1Name")+"',"+rb.getString("currency1InitialPrice")+")");
+	    		
+	    System.out.println(rb.getString("driver1ID"));
+	    
 	    /*stmt.executeUpdate("insert into users values (1,'tom')");
 	    stmt.executeUpdate("insert into users values (1,'tom')");
 	    stmt.executeUpdate("insert into users values (1,'tom')");
