@@ -10,3 +10,5 @@ RemoteSystemsTempFiles/
 .classpath
 .project
 .settings/
+derby.log
+parkingDB/
