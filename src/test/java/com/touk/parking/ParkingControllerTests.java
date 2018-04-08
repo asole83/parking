@@ -20,9 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,31 +51,57 @@ public class ParkingControllerTests {
     private MockMvc mockMvc;
     
     final long oneHour=3600000;
-    final ResourceBundle rb = ResourceBundle.getBundle("TestValues");
+    Properties prop = new Properties();
     
     //DRIVER 1
-    Driver d1=new Driver(Integer.parseInt(rb.getString("driver1ID")),rb.getString("driver1Name"),Boolean.getBoolean(rb.getString("driver1IsVIP")));
-    Car c1   =new Car(Integer.parseInt(rb.getString("car1ID")),Integer.parseInt(rb.getString("driver1ID")),rb.getString("car1PlateNumber"));
-    Car c2   =new Car(Integer.parseInt(rb.getString("car2ID")),Integer.parseInt(rb.getString("driver1ID")),rb.getString("car2PlateNumber"));
+    Driver d1;
+    Car c1;
+    Car c2;
     
     //DRIVER 2
-    Driver d2=new Driver(Integer.parseInt(rb.getString("driver2ID")),rb.getString("driver2Name"),Boolean.getBoolean(rb.getString("driver2IsVIP")));
-    Car c3   =new Car(Integer.parseInt(rb.getString("car3ID")),Integer.parseInt(rb.getString("driver2ID")),rb.getString("car3PlateNumber"));
-    Car c4   =new Car(Integer.parseInt(rb.getString("car4ID")),Integer.parseInt(rb.getString("driver2ID")),rb.getString("car4PlateNumber"));
+    Driver d2;
+    Car c3;
+    Car c4;
 
     //PARKING
-    Parking p1		=new Parking(Integer.parseInt(rb.getString("parking1ID")),rb.getString("parking1Name"));
-    ParkingMeter pm1=new ParkingMeter(Integer.parseInt(rb.getString("parkingMeter1ID")),Integer.parseInt(rb.getString("parking1ID")));
-    ParkingMeter pm2=new ParkingMeter(Integer.parseInt(rb.getString("parkingMeter2ID")),Integer.parseInt(rb.getString("parking1ID")));
+    Parking p1;
+    ParkingMeter pm1;
+    ParkingMeter pm2;
     
     //CURRENCY
-    Currency cur1=new Currency(Integer.parseInt(rb.getString("currency1ID")),rb.getString("currency1Name"),Float.parseFloat(rb.getString("currency1InitialPrice")));
-   
+    Currency cur1;
+    
     //Current date
     LocalDateTime currentDate=LocalDateTime.parse("2015-02-20T01:00:00");
     
-    
+    public ParkingControllerTests() {
+    	try {
+    		InputStream input = new FileInputStream("src/resources/TestValues.properties");
+    		prop.load(input);
+  	
+	    	//DRIVER 1
+	        d1=new Driver(Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("driver1Name"),Boolean.getBoolean(prop.getProperty("driver1IsVIP")));
+	        c1=new Car(Integer.parseInt(prop.getProperty("car1ID")),Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("car1PlateNumber"));
+	        c2=new Car(Integer.parseInt(prop.getProperty("car2ID")),Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("car2PlateNumber"));
+	        
+	        //DRIVER 2
+	        d2=new Driver(Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("driver2Name"),Boolean.getBoolean(prop.getProperty("driver2IsVIP")));
+	        c3=new Car(Integer.parseInt(prop.getProperty("car3ID")),Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("car3PlateNumber"));
+	        c4=new Car(Integer.parseInt(prop.getProperty("car4ID")),Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("car4PlateNumber"));
 	
+	        //PARKING
+	        p1 =new Parking(Integer.parseInt(prop.getProperty("parking1ID")),prop.getProperty("parking1Name"));
+	        pm1=new ParkingMeter(Integer.parseInt(prop.getProperty("parkingMeter1ID")),Integer.parseInt(prop.getProperty("parking1ID")));
+	        pm2=new ParkingMeter(Integer.parseInt(prop.getProperty("parkingMeter2ID")),Integer.parseInt(prop.getProperty("parking1ID")));
+	        
+	        //CURRENCY
+	        cur1=new Currency(Integer.parseInt(prop.getProperty("currency1ID")),prop.getProperty("currency1Name"),Float.parseFloat(prop.getProperty("currency1InitialPrice")));
+    	} catch (Exception e) {
+  	  		System.out.println(e);
+  	  	}
+    }
+    
+	/*
     @Test
     public void startParkingMeterTest() throws Exception {
     	this.mockMvc.perform(get("/0.1/isCarInMyParking")
@@ -400,9 +428,22 @@ public class ParkingControllerTests {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("19"));
     }
-	
+	*/
 	@Test
     public void param() throws Exception {
+		
+		System.out.println("init param");
+		  try {
+			  Properties prop = new Properties();
+			  InputStream input = new FileInputStream("src/resources/TestValues.properties");
+			  prop.load(input);
+			  System.out.println("algo222");
+			  System.out.println(prop.getProperty("driver1ID"));
+		  }catch (Exception e) {
+			  System.out.println(e);
+		  }
+		  
+		
 		this.mockMvc.perform(get("/greeting").param("name", "Spring Community"))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Hello, Spring Community!"));       
