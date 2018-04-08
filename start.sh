@@ -1,4 +1,4 @@
 #tests
-mvn clean package
+mvnw clean package
 #deploy
 mvnw spring-boot:run
