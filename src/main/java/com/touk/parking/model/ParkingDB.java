@@ -96,11 +96,6 @@ public class ParkingDB {
 	    stmt.executeUpdate("insert into currency values ("+rb.getString("currency1ID")+",'"+rb.getString("currency1Name")+"',"+rb.getString("currency1InitialPrice")+")");
 	    		
 	    System.out.println(rb.getString("driver1ID"));
-	    
-	    /*stmt.executeUpdate("insert into users values (1,'tom')");
-	    stmt.executeUpdate("insert into users values (1,'tom')");
-	    stmt.executeUpdate("insert into users values (1,'tom')");
-	    */
 	  } catch (SQLException e){
 			System.out.println(e);
 	  }
