@@ -3,10 +3,11 @@ package com.touk.parking.model;
 public class Parking {
 
     private int parkingID;
-    private String Name;
-	public Parking(int parkingID, String name) {
+    private String name;
+    private int currencyID;
+	public Parking(int parkingID, String name,int currencyID) {
 		this.parkingID = parkingID;
-		Name = name;
+		this.name = name;
 	}
 	public int getParkingID() {
 		return parkingID;
@@ -15,14 +16,21 @@ public class Parking {
 		this.parkingID = parkingID;
 	}
 	public String getName() {
-		return Name;
+		return name;
 	}
 	public void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
+	public int getCurrencyID() {
+		return currencyID;
+	}
+	public void setCurrencyID(int currencyID) {
+		this.currencyID = currencyID;
+	}
+	
 	@Override
 	public String toString() {
-		return "Parking [parkingID=" + parkingID + ", Name=" + Name + "]";
+		return "Parking [parkingID=" + parkingID + ", name=" + name + ", currencyID=" + currencyID + "]";
 	}
 	@Override
 	public int hashCode() {

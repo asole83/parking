@@ -90,7 +90,7 @@ public class ParkingControllerTests {
 	        c4=new Car(Integer.parseInt(prop.getProperty("car4ID")),Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("car4PlateNumber"));
 	
 	        //PARKING
-	        p1 =new Parking(Integer.parseInt(prop.getProperty("parking1ID")),prop.getProperty("parking1Name"));
+	        p1 =new Parking(Integer.parseInt(prop.getProperty("parking1ID")),prop.getProperty("parking1Name"),Integer.parseInt(prop.getProperty("parking1CurrencyID")));
 	        pm1=new ParkingMeter(Integer.parseInt(prop.getProperty("parkingMeter1ID")),Integer.parseInt(prop.getProperty("parking1ID")));
 	        pm2=new ParkingMeter(Integer.parseInt(prop.getProperty("parkingMeter2ID")),Integer.parseInt(prop.getProperty("parking1ID")));
 	        
@@ -115,7 +115,7 @@ public class ParkingControllerTests {
         		.param("parkingID",Integer.toString(pm1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("No"));
-    	/*
+    	
         this.mockMvc.perform(get("/0.1/startParkingMeter")
         		.param("carID", Integer.toString(c1.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
@@ -127,7 +127,7 @@ public class ParkingControllerTests {
         		.param("parkingID",Integer.toString(pm1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Yes"));
-        */
+        
     }
     /*
     @Test
