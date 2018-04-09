@@ -96,12 +96,18 @@ public class ParkingControllerTests {
 	        
 	        //CURRENCY
 	        cur1=new Currency(Integer.parseInt(prop.getProperty("currency1ID")),prop.getProperty("currency1Name"),Float.parseFloat(prop.getProperty("currency1InitialPrice")));
+	        
+	        //Initialize values to DB
+	        this.mockMvc.perform(get("/0.1/initValuesForTests"))
+			.andDo(print()).andExpect(status().isOk());
+	        
     	} catch (Exception e) {
   	  		System.out.println(e);
   	  	}
+    	
     }
     
-	/*
+    
     @Test
     public void startParkingMeterTest() throws Exception {
     	this.mockMvc.perform(get("/0.1/isCarInMyParking")
@@ -109,7 +115,7 @@ public class ParkingControllerTests {
         		.param("parkingID",Integer.toString(pm1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("No"));
-    	
+    	/*
         this.mockMvc.perform(get("/0.1/startParkingMeter")
         		.param("carID", Integer.toString(c1.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
@@ -121,8 +127,9 @@ public class ParkingControllerTests {
         		.param("parkingID",Integer.toString(pm1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Yes"));
+        */
     }
-    
+    /*
     @Test
     public void stopParkingMeterTest() throws Exception {
     	startParkingMeterTest();

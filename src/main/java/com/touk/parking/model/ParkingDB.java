@@ -4,9 +4,14 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.touk.parking.Greeting;
  
 public class ParkingDB {
   Connection conn;
@@ -57,8 +62,8 @@ public class ParkingDB {
   }
   public void prepareTestValues(){
 	  try {
-		  InputStream input = new FileInputStream("src/resources/TestValues.properties");
-		  prop.load(input);
+		InputStream input = new FileInputStream("src/resources/TestValues.properties");
+		prop.load(input);
 
 		Statement stmt = conn.createStatement();
 		
@@ -81,6 +86,34 @@ public class ParkingDB {
 	  } catch (Exception e){
 			System.out.println(e);
 	  }
+  }
+  public Response isCarInMyParking(String plateNumber, int parkingID){
+	  try {
+
+		  Statement stmt = conn.createStatement();
+		  StringBuffer selectQuery=new StringBuffer("");
+		  selectQuery.append("SELECT count(*)");
+		  selectQuery.append("		FROM parking, parkingmeter, receipt, car");
+		  selectQuery.append("		WHERE parking.parkingID=parkingmeter.parkingID");
+		  selectQuery.append("		AND parkingmeter.parkingMeterID=receipt.parkingMeterID");
+		  selectQuery.append("		AND receipt.carID=car.carID");
+		  selectQuery.append("		AND car.plateNumber='").append(plateNumber).append("'");
+		  selectQuery.append("		AND receipt.endingTime is not null");
+		  
+		  ResultSet rs = stmt.executeQuery(new String(selectQuery));
+		  if (rs.next()) {
+			  	if (rs.getInt(1)==0) {
+			  		return new Response("No");
+			  	}
+			  	else {
+			  		return new Response("Yes");
+			  	}
+	      }
+		  
+	  } catch (SQLException e) {
+		  System.out.println(e);
+	  }
+	  return null;
   }
   
 }

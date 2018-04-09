@@ -28,6 +28,13 @@ public class ParkingController {
     	
     	return new Greeting(counter.incrementAndGet(),
                             String.format(template, name));
+//    	return new Greeting (111,"hola");
+    }
+    
+    @RequestMapping("/0.1/isCarInMyParking")
+    public Response isCarInMyParking(@RequestParam(value="plateNumber") String plateNumber, 
+    		@RequestParam(value="parkingID") int parkingID) {
+        return DB.isCarInMyParking(plateNumber,parkingID);
     }
     
 	@RequestMapping("/0.1/startParkingMeter")
