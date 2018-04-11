@@ -1,4 +1,4 @@
-This is an exercise from Company Touk:
+This is an exercise for Company Touk.
 
 Software used:
 Eclipse Jee Oxygen.2 Release 4.7.2
@@ -7,3 +7,8 @@ Git
 Java 8 (jdk 1.8.0_111)
 Java DB as database 
 Properties to have the values for environment of tests
+
+Bibliography:
+https://spring.io/guides/gs/rest-service/
+http://shengwangi.blogspot.co.uk/2015/10/how-to-use-embedded-java-db-derby-in-maven.html
+https://www.mkyong.com/java/java-properties-file-examples/
