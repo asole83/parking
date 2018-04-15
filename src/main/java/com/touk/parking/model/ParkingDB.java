@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.touk.parking.Greeting;
+import com.touk.parking.Response;
  
 public class ParkingDB {
   Connection conn;
@@ -21,7 +22,6 @@ public class ParkingDB {
   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
  
   public void connectionToDerby() {
-	System.out.println("init connectionToDerby");
     // -------------------------------------------
     // URL format is
     // jdbc:derby:<local directory to save data>
@@ -35,7 +35,6 @@ public class ParkingDB {
   }
  
   public void createNewTables(){
-	  System.out.println("init createNewTables");
 	  try {
 		Statement stmt = conn.createStatement();
 	 
@@ -66,7 +65,6 @@ public class ParkingDB {
 	  }
   }
   public void prepareTestValues(){
-	  System.out.println("init prepareTestValues");
 	  try {
 		InputStream input = new FileInputStream("src/resources/TestValues.properties");
 		prop.load(input);
@@ -150,6 +148,7 @@ public class ParkingDB {
 			  insertQuery.append("null").append(")");
 			  
 			  stmt.executeUpdate(new String(insertQuery));
+			  System.out.println("startParkingMeter with carID="+carID+" parkingMeterID="+parkingMeterID+" ended up successfully");
 		  } else {
 			  System.out.println("Problem getting if driver is VIP");
 			  return new Response("KO");

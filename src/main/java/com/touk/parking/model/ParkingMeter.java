@@ -4,7 +4,7 @@ public class ParkingMeter {
 
     private int parkingID;
     private int parkingMeterID;
-	public ParkingMeter(int parkingID, int parkingMeterID) {
+	public ParkingMeter(int parkingMeterID, int parkingID) {
 		this.parkingID = parkingID;
 		this.parkingMeterID = parkingMeterID;
 	}

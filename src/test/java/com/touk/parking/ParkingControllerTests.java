@@ -83,12 +83,12 @@ public class ParkingControllerTests {
 	        d1=new Driver(Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("driver1Name"),Boolean.getBoolean(prop.getProperty("driver1IsVIP")));
 	        c1=new Car(Integer.parseInt(prop.getProperty("car1ID")),Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("car1PlateNumber"));
 	        c2=new Car(Integer.parseInt(prop.getProperty("car2ID")),Integer.parseInt(prop.getProperty("driver1ID")),prop.getProperty("car2PlateNumber"));
-	        
+	
 	        //DRIVER 2
 	        d2=new Driver(Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("driver2Name"),Boolean.getBoolean(prop.getProperty("driver2IsVIP")));
 	        c3=new Car(Integer.parseInt(prop.getProperty("car3ID")),Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("car3PlateNumber"));
 	        c4=new Car(Integer.parseInt(prop.getProperty("car4ID")),Integer.parseInt(prop.getProperty("driver2ID")),prop.getProperty("car4PlateNumber"));
-	
+	        
 	        //PARKING
 	        p1 =new Parking(Integer.parseInt(prop.getProperty("parking1ID")),prop.getProperty("parking1Name"),Integer.parseInt(prop.getProperty("parking1CurrencyID")));
 	        pm1=new ParkingMeter(Integer.parseInt(prop.getProperty("parkingMeter1ID")),Integer.parseInt(prop.getProperty("parking1ID")));
@@ -96,23 +96,20 @@ public class ParkingControllerTests {
 	        
 	        //CURRENCY
 	        cur1=new Currency(Integer.parseInt(prop.getProperty("currency1ID")),prop.getProperty("currency1Name"),Float.parseFloat(prop.getProperty("currency1InitialPrice")));
-	        
-	        //Initialize values to DB
-	        this.mockMvc.perform(get("/0.1/initValuesForTests"))
-			.andDo(print()).andExpect(status().isOk());
-	        
     	} catch (Exception e) {
   	  		System.out.println(e);
   	  	}
     	
     }
     
-    
     @Test
     public void startParkingMeterTest() throws Exception {
+    	this.mockMvc.perform(get("/0.1/initValuesForTests"))
+                .andDo(print()).andExpect(status().isOk());
+    	
     	this.mockMvc.perform(get("/0.1/isCarInMyParking")
         		.param("plateNumber", c1.getPlateNumber())
-        		.param("parkingID",Integer.toString(pm1.getParkingID())))
+        		.param("parkingID",Integer.toString(p1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("No"));
     	
@@ -124,7 +121,7 @@ public class ParkingControllerTests {
         
         this.mockMvc.perform(get("/0.1/isCarInMyParking")
         		.param("plateNumber", c1.getPlateNumber())
-        		.param("parkingID",Integer.toString(pm1.getParkingID())))
+        		.param("parkingID",Integer.toString(p1.getParkingID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Yes"));
         
@@ -436,16 +433,14 @@ public class ParkingControllerTests {
                 .andExpect(jsonPath("$.content").value("19"));
     }
 	*/
+    
+    
 	@Test
     public void param() throws Exception {
-		
-		System.out.println("init param");
 		  try {
 			  Properties prop = new Properties();
 			  InputStream input = new FileInputStream("src/resources/TestValues.properties");
 			  prop.load(input);
-			  System.out.println("algo222");
-			  System.out.println(prop.getProperty("driver1ID"));
 		  }catch (Exception e) {
 			  System.out.println(e);
 		  }
