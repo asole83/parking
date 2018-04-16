@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
@@ -55,7 +56,7 @@ public class ParkingDB {
 		//Create new tables (create table if not exists is not possible in Derby DB)
 		stmt.executeUpdate("Create table driver (driverID int primary key, name varchar(30),isVIP boolean)");
 	    stmt.executeUpdate("Create table car (carID int primary key, driverID int, plateNumber varchar(30))");
-	    stmt.executeUpdate("Create table receipt (carID int,parkingMeterID int, isDriverVIPWhenStarted boolean,startingTime TimeStamp,endingTime TimeStamp, price float)");
+	    stmt.executeUpdate("Create table receipt (receiptID int primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),carID int,parkingMeterID int, isDriverVIPWhenStarted boolean,startingTime TimeStamp,endingTime TimeStamp, price float,currencyName varchar(30))");
 	    stmt.executeUpdate("Create table parkingmeter (parkingMeterID int primary key, parkingID int)");
 	    stmt.executeUpdate("Create table parking (parkingID int primary key, name varchar(30),currencyID int)");
 	    stmt.executeUpdate("Create table currency (currencyID int primary key, currencyName varchar(30),initialPrice float)");
@@ -161,4 +162,68 @@ public class ParkingDB {
 	  return new Response("Ok");
   }
   
+  public Response stopParkingMeter(int carID){
+	  try {		  
+		  Statement stmt = conn.createStatement();
+		  StringBuffer selectRightReceipt=new StringBuffer("");
+		  selectRightReceipt.append("SELECT receipt.receiptID,receipt.isDriverVIPWhenStarted,receipt.startingTime,currency.currencyName,currency.initialPrice");
+		  selectRightReceipt.append("		FROM receipt,parkingMeter,parking,currency");
+		  selectRightReceipt.append("		WHERE receipt.parkingMeterID=parkingMeter.parkingMeterID");
+		  selectRightReceipt.append("		AND parkingMeter.parkingID=parking.parkingID");
+		  selectRightReceipt.append("		AND parking.currencyID=currency.currencyID");
+		  selectRightReceipt.append("		AND receipt.carID=").append(carID);
+		  selectRightReceipt.append("		AND receipt.endingTime is null");
+		  
+		  ResultSet rsRightReceipt = stmt.executeQuery(new String(selectRightReceipt));
+		  
+		  if (rsRightReceipt.next()) {
+			  LocalDateTime now = LocalDateTime.now();
+			  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+			  LocalDateTime startingTime = LocalDateTime.parse(rsRightReceipt.getString("startingTime"), formatter);
+			 
+			  double parkingCost=calculateValue (startingTime,now,rsRightReceipt.getBoolean("isDriverVIPWhenStarted"),rsRightReceipt.getFloat("initialPrice"));
+			  
+			  StringBuffer updateReceiptQuery=new StringBuffer("");
+			  updateReceiptQuery.append("UPDATE Receipt ");
+			  updateReceiptQuery.append("	SET price=").append(parkingCost).append(",");
+			  updateReceiptQuery.append("	endingTime='").append(dtf.format(now)).append("',");
+			  updateReceiptQuery.append("	currencyName='").append(rsRightReceipt.getString("currencyName")).append("'");
+			  updateReceiptQuery.append("	WHERE receipt.receiptID=").append(rsRightReceipt.getString("receiptID"));
+			  
+			  stmt.executeUpdate(new String(updateReceiptQuery));
+			  System.out.println("stopParkingMeter with carID="+carID+" ended up successfully");
+		  } else {
+			  System.out.println("Problem getting the receipt");
+			  return new Response("KO");
+		  }
+		  
+	  } catch (SQLException e) {
+		  System.out.println(e);
+		  return new Response("KO");
+	  }
+	  return new Response("Ok");
+  }
+  
+  private double calculateValue (LocalDateTime startingTime,LocalDateTime endingTime,boolean isDriverVIPWhenStarted, float initialPriceCurrency){
+	  System.out.println("startingTime="+startingTime);
+	  System.out.println("endingTime="+endingTime);
+	  System.out.println("isDriverVIPWhenStarted="+isDriverVIPWhenStarted);
+	  System.out.println("initialPriceCurrency="+initialPriceCurrency);
+	  double totalValue=0;
+	  
+	  int numberOfHours = (int) Duration.between(startingTime, endingTime).toHours();
+	  if (isDriverVIPWhenStarted) {
+		  if (numberOfHours==0 || numberOfHours==1) {
+			  return 0;
+		  } else {
+			  for (int i=numberOfHours-1;i>0;i--) {
+				  totalValue+=Math.pow(1.5, numberOfHours)+0.5*Math.pow(1.5, numberOfHours-1);
+			  }
+		  }
+	  } else {
+		  return Math.pow(2, numberOfHours)-1;
+	  }
+	  
+	  return totalValue;
+  }
 }

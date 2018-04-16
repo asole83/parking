@@ -126,13 +126,12 @@ public class ParkingControllerTests {
                 .andExpect(jsonPath("$.content").value("Yes"));
         
     }
-    /*
+    
     @Test
     public void stopParkingMeterTest() throws Exception {
     	startParkingMeterTest();
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
-        		.param("currencyID",Integer.toString(cur1.getCurrencyID())))
+        		.param("carID", Integer.toString(c1.getCarID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
@@ -142,7 +141,7 @@ public class ParkingControllerTests {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("No"));
     }
-    
+    /*
     @Test
     public void seeLastReceiptsVIPTest() throws Exception {
     	DateTimeUtils.setCurrentMillisFixed(currentDate.getLong(ChronoField.MILLI_OF_SECOND));

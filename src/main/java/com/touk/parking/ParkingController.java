@@ -41,4 +41,9 @@ public class ParkingController {
     		@RequestParam(value="parkingMeterID") int parkingMeterID) {
         return DB.startParkingMeter(carID,parkingMeterID);
     }
+	
+	@RequestMapping("/0.1/stopParkingMeter")
+    public Response stopParkingMeter(@RequestParam(value="carID") int carID) {
+        return DB.stopParkingMeter(carID);
+    }
 }

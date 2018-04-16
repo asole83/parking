@@ -1,5 +1,5 @@
 startParkingMeter (carID, parkingMeterID)
-stopParkingMeter (carID, currency)
+stopParkingMeter (carID)
 seeLastReceipts (driverID, howManyReceipts)
 isCarInMyParking (plateNumber, parkingID)
 howMuchMoneyDuringThisDay (parkingID, date)
