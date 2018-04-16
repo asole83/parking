@@ -46,4 +46,16 @@ public class ParkingController {
     public Response stopParkingMeter(@RequestParam(value="carID") int carID) {
         return DB.stopParkingMeter(carID);
     }
+	
+	@RequestMapping("/0.1/howMuchMoneyDuringThisDay")
+    public Response howMuchMoneyDuringThisDay(@RequestParam(value="parkingID") int parkingID,
+    		@RequestParam(value="date") String date) {
+        return DB.howMuchMoneyDuringThisDay (parkingID, date);
+    }
+	
+	@RequestMapping("/0.1/seeLastReceipts")
+    public Response seeLastReceipts(@RequestParam(value="driverID") int driverID,
+    		@RequestParam(value="numberOfReceipts") int numberOfReceipts) {
+        return DB.seeLastReceipts(driverID,numberOfReceipts);
+    }
 }

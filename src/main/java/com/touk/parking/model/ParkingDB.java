@@ -226,4 +226,33 @@ public class ParkingDB {
 	  
 	  return totalValue;
   }
+  
+  public Response howMuchMoneyDuringThisDay (int parkingID,String date){
+	  try {		  
+		  Statement stmt = conn.createStatement();
+		  StringBuffer selectTotalSum=new StringBuffer("");
+		  selectTotalSum.append("SELECT sum(receipt.price)");
+		  selectTotalSum.append("		FROM receipt");
+		  selectTotalSum.append("		WHERE receipt.parkingID=").append(parkingID);
+		  selectTotalSum.append("		AND receipt.endingTime between '").append(date).append("T00:00:00' and '").append(date).append("T23:59:59").append("'");
+		  
+		  ResultSet rsTotalSum = stmt.executeQuery(new String(selectTotalSum));
+		  
+		  if (rsTotalSum.next()) {
+			  return new Response(rsTotalSum.getString(1));
+		  }
+	  } catch (SQLException e) {
+		  System.out.println(e);
+		  return new Response("KO");
+	  }
+	  
+	  return new Response("KO");
+  }
+  
+  public Response seeLastReceipts(int driverID,int numberOfReceipts){
+	  return new Response("Ok");
+  }
+  
+  
+  
 }
