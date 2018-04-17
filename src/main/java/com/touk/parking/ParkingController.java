@@ -1,6 +1,7 @@
 package com.touk.parking;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,7 +55,7 @@ public class ParkingController {
     }
 	
 	@RequestMapping("/0.1/seeLastReceipts")
-    public Response seeLastReceipts(@RequestParam(value="driverID") int driverID,
+    public List<SendingReceipt> seeLastReceipts(@RequestParam(value="driverID") int driverID,
     		@RequestParam(value="numberOfReceipts") int numberOfReceipts) {
         return DB.seeLastReceipts(driverID,numberOfReceipts);
     }

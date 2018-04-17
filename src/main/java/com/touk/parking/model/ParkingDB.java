@@ -10,8 +10,11 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import org.joda.time.DateTime;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.touk.parking.Greeting;
@@ -21,6 +24,7 @@ public class ParkingDB {
   Connection conn;
   Properties prop = new Properties();
   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  DateTimeFormatter DBformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
  
   public void connectionToDerby() {
     // -------------------------------------------
@@ -133,7 +137,10 @@ public class ParkingDB {
 		  ResultSet rsDriverIsVIP = stmt.executeQuery(new String(selectDriverIsVIP));
 		  
 		  if (rsDriverIsVIP.next()) {
-			  LocalDateTime now = LocalDateTime.now();
+			  //LocalDateTime now = LocalDateTime.now();
+			  DateTime startingTimeDt=new DateTime();
+			  LocalDateTime startingTime=LocalDateTime.of(startingTimeDt.getYear(), startingTimeDt.getMonthOfYear(), startingTimeDt.getDayOfMonth(), startingTimeDt.getHourOfDay(), startingTimeDt.getMinuteOfHour());
+			  System.out.println("startingTime="+startingTime);
 			  
 			  StringBuffer insertQuery=new StringBuffer("");
 			  insertQuery.append("insert into Receipt ");
@@ -143,8 +150,7 @@ public class ParkingDB {
 			  insertQuery.append(carID).append(",");
 			  insertQuery.append(parkingMeterID).append(",");
 			  insertQuery.append("'").append(rsDriverIsVIP.getString("isVIP")).append("',");
-			  insertQuery.append("'").append(dtf.format(now)).append("',");
-			  //'1960-01-01 23:03:20'
+			  insertQuery.append("'").append(dtf.format(startingTime)).append("',");
 			  insertQuery.append("null").append(",");
 			  insertQuery.append("null").append(")");
 			  
@@ -177,20 +183,27 @@ public class ParkingDB {
 		  ResultSet rsRightReceipt = stmt.executeQuery(new String(selectRightReceipt));
 		  
 		  if (rsRightReceipt.next()) {
-			  LocalDateTime now = LocalDateTime.now();
-			  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-			  LocalDateTime startingTime = LocalDateTime.parse(rsRightReceipt.getString("startingTime"), formatter);
+			  //LocalDateTime now = LocalDateTime.now();
+			  DateTime endingTimeDt=new DateTime();
+			  LocalDateTime endingTime=LocalDateTime.of(endingTimeDt.getYear(), endingTimeDt.getMonthOfYear(), endingTimeDt.getDayOfMonth(), endingTimeDt.getHourOfDay(), endingTimeDt.getMinuteOfHour());
+			  //LocalDateTime now=LocalDateTime.of
+			  //Changing from LocalDateTime to DateTime joda??
+			  
+			  LocalDateTime startingTime = LocalDateTime.parse(rsRightReceipt.getString("startingTime"), DBformatter);
 			 
-			  double parkingCost=calculateValue (startingTime,now,rsRightReceipt.getBoolean("isDriverVIPWhenStarted"),rsRightReceipt.getFloat("initialPrice"));
+			  double parkingCost=calculateValue (startingTime,endingTime,rsRightReceipt.getBoolean("isDriverVIPWhenStarted"),rsRightReceipt.getFloat("initialPrice"));
 			  
 			  StringBuffer updateReceiptQuery=new StringBuffer("");
 			  updateReceiptQuery.append("UPDATE Receipt ");
 			  updateReceiptQuery.append("	SET price=").append(parkingCost).append(",");
-			  updateReceiptQuery.append("	endingTime='").append(dtf.format(now)).append("',");
+			  updateReceiptQuery.append("	endingTime='").append(dtf.format(endingTime)).append("',");
 			  updateReceiptQuery.append("	currencyName='").append(rsRightReceipt.getString("currencyName")).append("'");
 			  updateReceiptQuery.append("	WHERE receipt.receiptID=").append(rsRightReceipt.getString("receiptID"));
 			  
 			  stmt.executeUpdate(new String(updateReceiptQuery));
+			  
+			  System.out.println("endingTime="+endingTime);
+			  
 			  System.out.println("stopParkingMeter with carID="+carID+" ended up successfully");
 		  } else {
 			  System.out.println("Problem getting the receipt");
@@ -212,12 +225,16 @@ public class ParkingDB {
 	  double totalValue=0;
 	  
 	  int numberOfHours = (int) Duration.between(startingTime, endingTime).toHours();
+	  System.out.println("numberOfHours="+numberOfHours);
+	  
 	  if (isDriverVIPWhenStarted) {
 		  if (numberOfHours==0 || numberOfHours==1) {
 			  return 0;
 		  } else {
 			  for (int i=numberOfHours-1;i>0;i--) {
-				  totalValue+=Math.pow(1.5, numberOfHours)+0.5*Math.pow(1.5, numberOfHours-1);
+				  System.out.println("inside the loop");
+				  totalValue+=Math.pow(1.5, i)+0.5*Math.pow(1.5, i-1);
+				  System.out.println("totalValue="+totalValue);
 			  }
 		  }
 	  } else {
@@ -249,8 +266,37 @@ public class ParkingDB {
 	  return new Response("KO");
   }
   
-  public Response seeLastReceipts(int driverID,int numberOfReceipts){
-	  return new Response("Ok");
+  public List<SendingReceipt> seeLastReceipts(int driverID,int numberOfReceipts){
+	  
+	  List<SendingReceipt> lsr=new ArrayList<SendingReceipt>();
+	  try {		  
+		  Statement stmt = conn.createStatement();
+		  StringBuffer selectLastReceipts=new StringBuffer("");
+		  selectLastReceipts.append("SELECT receipt.startingTime,receipt.endingTime,receipt.price,receipt.currencyName,car.plateNumber,parking.name");
+		  selectLastReceipts.append("		FROM receipt,car,driver,parkingMeter,parking");
+		  selectLastReceipts.append("		WHERE receipt.carID=car.carID");
+		  selectLastReceipts.append("		AND car.driverID=driver.driverID");
+		  selectLastReceipts.append("		AND receipt.parkingMeterID=parkingMeter.parkingMeterID");
+		  selectLastReceipts.append("		AND parkingMeter.parkingID=parking.parkingID");
+		  selectLastReceipts.append("		AND driver.driverID=").append(driverID);
+		  selectLastReceipts.append("		ORDER BY startingTime DESC");
+		  
+		  ResultSet rsLastReceipts = stmt.executeQuery(new String(selectLastReceipts));
+		  
+		  while (rsLastReceipts.next() && numberOfReceipts>0 ) {
+			  LocalDateTime startingTime = LocalDateTime.parse(rsLastReceipts.getString("startingTime"), DBformatter);
+			  LocalDateTime endingTime = LocalDateTime.parse(rsLastReceipts.getString("endingTime"), DBformatter);
+			  SendingReceipt sr=new SendingReceipt(rsLastReceipts.getString("plateNumber"),startingTime,
+					  endingTime,rsLastReceipts.getDouble("price"),rsLastReceipts.getString("currencyName"),
+					  rsLastReceipts.getString("Name"));
+			  lsr.add(sr);
+			  numberOfReceipts--;
+		  }
+	  } catch (SQLException e) {
+		  System.out.println(e);
+	  }
+	  
+	  return lsr;
   }
   
   

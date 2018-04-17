@@ -40,6 +40,7 @@ import com.touk.parking.model.Driver;
 import com.touk.parking.model.Parking;
 import com.touk.parking.model.ParkingMeter;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 
 @RunWith(SpringRunner.class)
@@ -72,7 +73,8 @@ public class ParkingControllerTests {
     Currency cur1;
     
     //Current date
-    LocalDateTime currentDate=LocalDateTime.parse("2015-02-20T01:00:00");
+    DateTime currentDate= new DateTime(2015,2,1,1,0);
+    
     
     public ParkingControllerTests() {
     	try {
@@ -141,32 +143,32 @@ public class ParkingControllerTests {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("No"));
     }
-    /*
+    
     @Test
     public void seeLastReceiptsVIPTest() throws Exception {
-    	DateTimeUtils.setCurrentMillisFixed(currentDate.getLong(ChronoField.MILLI_OF_SECOND));
+    	DateTimeUtils.setCurrentMillisFixed(currentDate.getMillis());
+    	
+    	this.mockMvc.perform(get("/0.1/initValuesForTests"))
+        .andDo(print()).andExpect(status().isOk());
     	
         this.mockMvc.perform(get("/0.1/startParkingMeter")
         		.param("carID", Integer.toString(c1.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("Ok"));
-        
-        //2 hours later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+                .andExpect(jsonPath("$.content").value("Ok"));        
+
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(2).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
-				.param("currencyID", Integer.toString(cur1.getCurrencyID())))
+        		.param("carID", Integer.toString(c1.getCarID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
         		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(1)))
+        		.param("numberOfReceipts",Integer.toString(1)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("2"));
+                .andExpect(jsonPath("$[0].price").value("2.0"));
         
         this.mockMvc.perform(get("/0.1/startParkingMeter")
         		.param("carID", Integer.toString(c1.getCarID()))
@@ -174,11 +176,7 @@ public class ParkingControllerTests {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
-        //4 hours later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(4).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
         		.param("carID", Integer.toString(c1.getCarID()))
@@ -188,9 +186,15 @@ public class ParkingControllerTests {
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
         		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(3)))
+        		.param("numberOfReceipts",Integer.toString(3)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("2,9.5"));
+                .andExpect(jsonPath("$[1].price").value("2.0"));
+        
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d1.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].price").value("9.5"));
         
         this.mockMvc.perform(get("/0.1/startParkingMeter")
         		.param("carID", Integer.toString(c2.getCarID()))
@@ -198,8 +202,7 @@ public class ParkingControllerTests {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
-        //1 hour later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(1).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
         		.param("carID", Integer.toString(c2.getCarID()))
@@ -209,83 +212,108 @@ public class ParkingControllerTests {
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
         		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(3)))
+        		.param("numberOfReceipts",Integer.toString(3)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("2,9.5,0"));
+                .andExpect(jsonPath("$[2].price").value("2.0"));
+        
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d1.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[1].price").value("9.5"));
+
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d1.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].price").value("0.0"));
     }
     
     @Test
     public void seeLastReceiptsRegularTest() throws Exception {
-        DateTimeUtils.setCurrentMillisFixed(currentDate.getLong(ChronoField.MILLI_OF_SECOND));
+    	DateTimeUtils.setCurrentMillisFixed(currentDate.getMillis());
+    	
+    	this.mockMvc.perform(get("/0.1/initValuesForTests"))
+        .andDo(print()).andExpect(status().isOk());
     	
         this.mockMvc.perform(get("/0.1/startParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
+        		.param("carID", Integer.toString(c3.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
-        //2 hours later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(2).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
-        		.param("currencyID",Integer.toString(cur1.getCurrencyID())))
+        		.param("carID", Integer.toString(c3.getCarID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
-        		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(1)))
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(1)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("3"));
+                .andExpect(jsonPath("$[0].price").value("3.0"));
         
         this.mockMvc.perform(get("/0.1/startParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
+        		.param("carID", Integer.toString(c3.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
-        //4 hours later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(4).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
-        		.param("carID", Integer.toString(c1.getCarID()))
+        		.param("carID", Integer.toString(c3.getCarID()))
         		.param("currencyID",Integer.toString(cur1.getCurrencyID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
-        		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(3)))
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("3,15"));
+                .andExpect(jsonPath("$[1].price").value("3.0"));
+
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].price").value("15.0"));
         
         this.mockMvc.perform(get("/0.1/startParkingMeter")
-        		.param("carID", Integer.toString(c2.getCarID()))
+        		.param("carID", Integer.toString(c4.getCarID()))
         		.param("parkingMeterID",Integer.toString(pm1.getParkingMeterID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
-        //1 hour later
-        DateTimeUtils.setCurrentMillisFixed(DateTimeUtils.currentTimeMillis()+oneHour);
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusHours(1).getMillis());
         
         this.mockMvc.perform(get("/0.1/stopParkingMeter")
-        		.param("carID", Integer.toString(c2.getCarID()))
+        		.param("carID", Integer.toString(c4.getCarID()))
         		.param("currencyID",Integer.toString(cur1.getCurrencyID())))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Ok"));
         
         this.mockMvc.perform(get("/0.1/seeLastReceipts")
-        		.param("driverID", Integer.toString(d1.getDriverID()))
-        		.param("howManyReceipts",Integer.toString(3)))
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("3,15,1"));
+                .andExpect(jsonPath("$[2].price").value("3.0"));
+        
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[1].price").value("15.0"));
+
+        this.mockMvc.perform(get("/0.1/seeLastReceipts")
+        		.param("driverID", Integer.toString(d2.getDriverID()))
+        		.param("numberOfReceipts",Integer.toString(3)))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].price").value("1.0"));
     }
-    
+    /*
     @Test
     public void howMuchMoneyDuringThisDayVIPTest() throws Exception {
     	//Setting initial hour at 1a.m.
@@ -433,6 +461,11 @@ public class ParkingControllerTests {
     }
 	*/
     
+    @Test 
+    public void afterTests() throws Exception {
+    	//Clock back to normal
+    	DateTimeUtils.setCurrentMillisSystem();
+    }
     
 	@Test
     public void param() throws Exception {
