@@ -133,10 +133,8 @@ public class ParkingDB {
 		  ResultSet rsDriverIsVIP = stmt.executeQuery(new String(selectDriverIsVIP));
 		  
 		  if (rsDriverIsVIP.next()) {
-			  //LocalDateTime now = LocalDateTime.now();
 			  DateTime startingTimeDt=new DateTime();
 			  LocalDateTime startingTime=LocalDateTime.of(startingTimeDt.getYear(), startingTimeDt.getMonthOfYear(), startingTimeDt.getDayOfMonth(), startingTimeDt.getHourOfDay(), startingTimeDt.getMinuteOfHour());
-			  System.out.println("startingTime="+startingTime);
 			  
 			  StringBuffer insertQuery=new StringBuffer("");
 			  insertQuery.append("insert into Receipt ");
