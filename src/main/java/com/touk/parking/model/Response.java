@@ -1,4 +1,4 @@
-package com.touk.parking;
+package com.touk.parking.model;
 
 public class Response {
     private final String content;

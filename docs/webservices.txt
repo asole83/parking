@@ -1,5 +1,13 @@
+Implemented web services in version 0.1:
 startParkingMeter (carID, parkingMeterID)
 stopParkingMeter (carID)
 seeLastReceipts (driverID, numberOfReceipts)
 isCarInMyParking (plateNumber, parkingID)
 howMuchMoneyDuringThisDay (parkingID, date)
+
+Examples of calls to web services:
+http://localhost:8080/0.1/startParkingMeter?carID=1&parkingMeterID=10
+http://localhost:8080/0.1/stopParkingMeter?carID=1
+http://localhost:8080/0.1/seeLastReceipts?driverID=100&numberOfReceipts=1
+http://localhost:8080/0.1/isCarInMyParking?plateNumber=WB1234&parkingID=1000
+http://localhost:8080/0.1/howMuchMoneyDuringThisDay?parkingID=1000&date=2015-02-01

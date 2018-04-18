@@ -9,11 +9,7 @@ Java DB as database
 Properties to have the values for environment of tests
 org.joda.time to manipulate time in tests
 
-Examples of calls to webservices:
-http://localhost:8080/0.1/isCarInMyParking?plateNumber=WB1234&parkingID=1000
-http://localhost:8080/0.1/startParkingMeter?carID=1&parkingMeterID=10
-http://localhost:8080/0.1/stopParkingMeter?carID=1
-http://localhost:8080/0.1/seeLastReceipts?driverID=100&numberOfReceipts=1
+In folder docs/ there is the documentation about the project
 
 Bibliography:
 https://spring.io/guides/gs/rest-service/

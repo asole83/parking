@@ -4,13 +4,11 @@ public class Currency {
 
     private int currencyID;
     private String currencyName;
-    private float initialPrice;
     
-	public Currency(int currencyID, String currencyName, float initialPrice) {
+	public Currency(int currencyID, String currencyName) {
 		super();
 		this.currencyID = currencyID;
 		this.currencyName = currencyName;
-		this.initialPrice = initialPrice;
 	}
 	public int getCurrencyID() {
 		return currencyID;
@@ -24,16 +22,10 @@ public class Currency {
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
 	}
-	public float getInitialPrice() {
-		return initialPrice;
-	}
-	public void setInitialPrice(float initialPrice) {
-		this.initialPrice = initialPrice;
-	}
+	
 	@Override
 	public String toString() {
-		return "Currency [currencyID=" + currencyID + ", currencyName=" + currencyName + ", initialPrice="
-				+ initialPrice + "]";
+		return "Currency [currencyID=" + currencyID + ", currencyName=" + currencyName + "]";
 	}
 	@Override
 	public int hashCode() {

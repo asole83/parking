@@ -15,10 +15,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.joda.time.DateTime;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.touk.parking.Greeting;
-import com.touk.parking.Response;
  
 public class ParkingDB {
   Connection conn;
@@ -63,7 +59,7 @@ public class ParkingDB {
 	    stmt.executeUpdate("Create table receipt (receiptID int primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),carID int,parkingMeterID int, isDriverVIPWhenStarted boolean,startingTime TimeStamp,endingTime TimeStamp, price float,currencyName varchar(30))");
 	    stmt.executeUpdate("Create table parkingmeter (parkingMeterID int primary key, parkingID int)");
 	    stmt.executeUpdate("Create table parking (parkingID int primary key, name varchar(30),currencyID int)");
-	    stmt.executeUpdate("Create table currency (currencyID int primary key, currencyName varchar(30),initialPrice float)");
+	    stmt.executeUpdate("Create table currency (currencyID int primary key, currencyName varchar(30))");
 
 	  } catch (SQLException e){
 			System.out.println(e);
@@ -91,7 +87,7 @@ public class ParkingDB {
 	    stmt.executeUpdate("insert into parkingmeter values ("+prop.getProperty("parkingMeter2ID")+","+prop.getProperty("parking1ID")+")");
 
 	    //Currency
-	    stmt.executeUpdate("insert into currency values ("+prop.getProperty("currency1ID")+",'"+prop.getProperty("currency1Name")+"',"+prop.getProperty("currency1InitialPrice")+")");
+	    stmt.executeUpdate("insert into currency values ("+prop.getProperty("currency1ID")+",'"+prop.getProperty("currency1Name")+"')");
 	  } catch (Exception e){
 			System.out.println(e);
 	  }
@@ -172,7 +168,7 @@ public class ParkingDB {
 	  try {		  
 		  Statement stmt = conn.createStatement();
 		  StringBuffer selectRightReceipt=new StringBuffer("");
-		  selectRightReceipt.append("SELECT receipt.receiptID,receipt.isDriverVIPWhenStarted,receipt.startingTime,currency.currencyName,currency.initialPrice");
+		  selectRightReceipt.append("SELECT receipt.receiptID,receipt.isDriverVIPWhenStarted,receipt.startingTime,currency.currencyName");
 		  selectRightReceipt.append("		FROM receipt,parkingMeter,parking,currency");
 		  selectRightReceipt.append("		WHERE receipt.parkingMeterID=parkingMeter.parkingMeterID");
 		  selectRightReceipt.append("		AND parkingMeter.parkingID=parking.parkingID");
@@ -183,15 +179,12 @@ public class ParkingDB {
 		  ResultSet rsRightReceipt = stmt.executeQuery(new String(selectRightReceipt));
 		  
 		  if (rsRightReceipt.next()) {
-			  //LocalDateTime now = LocalDateTime.now();
 			  DateTime endingTimeDt=new DateTime();
 			  LocalDateTime endingTime=LocalDateTime.of(endingTimeDt.getYear(), endingTimeDt.getMonthOfYear(), endingTimeDt.getDayOfMonth(), endingTimeDt.getHourOfDay(), endingTimeDt.getMinuteOfHour());
-			  //LocalDateTime now=LocalDateTime.of
-			  //Changing from LocalDateTime to DateTime joda??
 			  
 			  LocalDateTime startingTime = LocalDateTime.parse(rsRightReceipt.getString("startingTime"), DBformatter);
 			 
-			  double parkingCost=calculateValue (startingTime,endingTime,rsRightReceipt.getBoolean("isDriverVIPWhenStarted"),rsRightReceipt.getFloat("initialPrice"));
+			  double parkingCost=calculateValue (startingTime,endingTime,rsRightReceipt.getBoolean("isDriverVIPWhenStarted"));
 			  
 			  StringBuffer updateReceiptQuery=new StringBuffer("");
 			  updateReceiptQuery.append("UPDATE Receipt ");
@@ -201,8 +194,6 @@ public class ParkingDB {
 			  updateReceiptQuery.append("	WHERE receipt.receiptID=").append(rsRightReceipt.getString("receiptID"));
 			  
 			  stmt.executeUpdate(new String(updateReceiptQuery));
-			  
-			  System.out.println("endingTime="+endingTime);
 			  
 			  System.out.println("stopParkingMeter with carID="+carID+" ended up successfully");
 		  } else {
@@ -217,24 +208,16 @@ public class ParkingDB {
 	  return new Response("Ok");
   }
   
-  private double calculateValue (LocalDateTime startingTime,LocalDateTime endingTime,boolean isDriverVIPWhenStarted, float initialPriceCurrency){
-	  System.out.println("startingTime="+startingTime);
-	  System.out.println("endingTime="+endingTime);
-	  System.out.println("isDriverVIPWhenStarted="+isDriverVIPWhenStarted);
-	  System.out.println("initialPriceCurrency="+initialPriceCurrency);
-	  double totalValue=0;
-	  
+  private double calculateValue (LocalDateTime startingTime,LocalDateTime endingTime,boolean isDriverVIPWhenStarted){
+	  double totalValue=0;	  
 	  int numberOfHours = (int) Duration.between(startingTime, endingTime).toHours();
-	  System.out.println("numberOfHours="+numberOfHours);
 	  
 	  if (isDriverVIPWhenStarted) {
 		  if (numberOfHours==0 || numberOfHours==1) {
 			  return 0;
 		  } else {
 			  for (int i=numberOfHours-1;i>0;i--) {
-				  System.out.println("inside the loop");
 				  totalValue+=Math.pow(1.5, i)+0.5*Math.pow(1.5, i-1);
-				  System.out.println("totalValue="+totalValue);
 			  }
 		  }
 	  } else {
@@ -249,9 +232,10 @@ public class ParkingDB {
 		  Statement stmt = conn.createStatement();
 		  StringBuffer selectTotalSum=new StringBuffer("");
 		  selectTotalSum.append("SELECT sum(receipt.price)");
-		  selectTotalSum.append("		FROM receipt");
-		  selectTotalSum.append("		WHERE receipt.parkingID=").append(parkingID);
-		  selectTotalSum.append("		AND receipt.endingTime between '").append(date).append("T00:00:00' and '").append(date).append("T23:59:59").append("'");
+		  selectTotalSum.append("		FROM receipt,parkingMeter");
+		  selectTotalSum.append("		WHERE receipt.parkingMeterID=parkingMeter.parkingMeterID");
+		  selectTotalSum.append("		AND parkingMeter.parkingID=").append(parkingID);
+		  selectTotalSum.append("		AND receipt.endingTime between '").append(date).append(" 00:00:00' and '").append(date).append(" 23:59:59'");
 		  
 		  ResultSet rsTotalSum = stmt.executeQuery(new String(selectTotalSum));
 		  
